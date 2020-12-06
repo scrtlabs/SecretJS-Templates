@@ -53,6 +53,7 @@ class App extends React.Component {
     //     2. rpc = "ttp://bootstrap.secrettestnet.io:26657"
     //     3. rest = "https://bootstrap.secrettestnet.io"
     //     4. chainName = Whatever you like
+    // For more examples, go to: https://github.com/chainapsis/keplr-example/blob/master/src/main.js
     await window.keplr.experimentalSuggestChain({
       chainId: CHIAN_ID,
       chainName: "Local Secret Chain",
