@@ -14,6 +14,8 @@ class App extends React.Component {
   async componentWillMount() {
     await this.setupKeplr();
 
+    // Get all contracts with Code ID CODE_ID Every few seconds
+    // There's probably a more efficient way 😅
     setInterval(async () => {
       const contracts = await this.secretjs.getContracts(CODE_ID);
       this.setState({ contracts: contracts });
@@ -99,7 +101,7 @@ class App extends React.Component {
     this.accounts = await this.keplrOfflineSigner.getAccounts();
 
     this.secretjs = new SigningCosmWasmClient(
-      "http://localhost:1337", // holodeck - https://bootstrap.secrettestnet.io; mainnet - user your LCD provider
+      "http://localhost:1337", // holodeck - https://bootstrap.secrettestnet.io; mainnet - user your LCD/REST provider
       this.accounts[0].address,
       this.keplrOfflineSigner,
       window.getEnigmaUtils(CHIAN_ID),
