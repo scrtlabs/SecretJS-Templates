@@ -1,3 +1,9 @@
+// Run:
+// `npx create-react-app secret-dapp`
+// `cd secret-dapp`
+// `yarn add secretjs` (or `npm i secretjs`)
+// Then copy the content of this file into `src/App.js`
+
 import React from "react";
 import { SigningCosmWasmClient } from "secretjs";
 
