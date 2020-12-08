@@ -14,18 +14,11 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { keplrReady: false, contracts: [], account: null };
+    this.state = { keplrReady: false, account: null };
   }
 
   async componentWillMount() {
     await this.setupKeplr();
-
-    // Get all contracts with Code ID CODE_ID Every few seconds
-    // There's probably a more efficient way 😅
-    setInterval(async () => {
-      const contracts = await this.secretjs.getContracts(CODE_ID);
-      this.setState({ contracts });
-    }, 3000);
 
     const account = await this.secretjs.getAccount(this.state.account.address);
     this.setState({ account });
@@ -163,12 +156,6 @@ class App extends React.Component {
       <>
         {account}
         {balance}
-        <h1>
-          Contracts with Code ID {CODE_ID} ({this.state.contracts.length})
-        </h1>
-        {this.state.contracts.map((contract, idx) => (
-          <div key={idx}>{contract}</div>
-        ))}
       </>
     );
   }
