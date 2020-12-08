@@ -14,7 +14,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { contracts: [], account: null };
+    this.state = { keplrReady: false, contracts: [], account: null };
   }
 
   async componentWillMount() {
