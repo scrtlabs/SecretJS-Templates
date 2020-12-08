@@ -16,7 +16,7 @@ class App extends React.Component {
     this.state = { keplrReady: false, account: null };
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     await this.setupKeplr();
 
     const account = await this.secretjs.getAccount(this.state.account.address);
