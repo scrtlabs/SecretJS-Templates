@@ -143,9 +143,9 @@ class App extends React.Component {
       balance = (
         <>
           Balance:{" "}
-          {new Intl.NumberFormat("en-US", {
-            maximumSignificantDigits: 3,
-          }).format(+this.state.account.balance[0].amount / 1e6)}{" "}
+          {new Intl.NumberFormat("en-US", {}).format(
+            +this.state.account.balance[0].amount / 1e6
+          )}{" "}
           SCRT
         </>
       );
