@@ -7,7 +7,6 @@
 import React from "react";
 import { SigningCosmWasmClient } from "secretjs";
 
-const CODE_ID = 1;
 const CHIAN_ID = "enigma-pub-testnet-3";
 
 class App extends React.Component {
