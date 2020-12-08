@@ -14,7 +14,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { contracts: [] };
+    this.state = { contracts: [], account: null };
   }
 
   async componentWillMount() {
@@ -24,8 +24,11 @@ class App extends React.Component {
     // There's probably a more efficient way 😅
     setInterval(async () => {
       const contracts = await this.secretjs.getContracts(CODE_ID);
-      this.setState({ contracts: contracts });
+      this.setState({ contracts });
     }, 3000);
+
+    const account = await this.secretjs.getAccount(this.state.account.address);
+    this.setState({ account });
   }
 
   async setupKeplr() {
@@ -105,11 +108,11 @@ class App extends React.Component {
     // Setup SecrtJS with Keplr's OfflineSigner
     // This pops-up a window for the user to sign on each tx we sent
     this.keplrOfflineSigner = window.getOfflineSigner(CHIAN_ID);
-    this.accounts = await this.keplrOfflineSigner.getAccounts();
+    const accounts = await this.keplrOfflineSigner.getAccounts();
 
     this.secretjs = new SigningCosmWasmClient(
       "http://localhost:1337", // holodeck - https://bootstrap.secrettestnet.io; mainnet - user your LCD/REST provider
-      this.accounts[0].address,
+      accounts[0].address,
       this.keplrOfflineSigner,
       window.getEnigmaUtils(CHIAN_ID),
       {
@@ -126,7 +129,7 @@ class App extends React.Component {
       }
     );
 
-    this.setState({ keplrReady: true });
+    this.setState({ keplrReady: true, account: accounts[0] });
   }
 
   render() {
@@ -138,11 +141,33 @@ class App extends React.Component {
       );
     }
 
+    let account = <h1>Account: unknown</h1>;
+    if (this.state.account) {
+      account = <h1>Account: {this.state.account.address}</h1>;
+    }
+
+    let balance = <>Balance: 0 SCRT</>;
+    try {
+      balance = (
+        <>
+          Balance:{" "}
+          {new Intl.NumberFormat("en-US", {
+            maximumSignificantDigits: 3,
+          }).format(+this.state.account.balance[0].amount / 1e6)}{" "}
+          SCRT
+        </>
+      );
+    } catch (e) {}
+
     return (
       <>
-        <h1>Contracts with Code ID {CODE_ID}</h1>
+        {account}
+        {balance}
+        <h1>
+          Contracts with Code ID {CODE_ID} ({this.state.contracts.length})
+        </h1>
         {this.state.contracts.map((contract, idx) => (
-          <div>{contract}</div>
+          <div key={idx}>{contract}</div>
         ))}
       </>
     );
