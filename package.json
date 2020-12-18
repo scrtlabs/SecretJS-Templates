@@ -1,0 +1,21 @@
+{
+  "name": "secret-tutorials",
+  "version": "1.0.0",
+  "description": "Figment Learn tutorials for Secret Network",
+  "main": "index.js",
+  "scripts": {
+    "1": "node 1_connecting_to_node/connect.js",
+    "2": "node 2_creating_account/create_account.js",
+    "3": "node 3_query_node/query.js",
+    "4": "node 4_transactions/transfer.js",
+    "5": "node 5_contracts/main.js",
+    "7": "node 7_snip20_token/main.js",
+    "4:advanced": "node 4_transactions/send.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "secretjs": "^0.10.3",
+    "dotenv": "^8.2.0"
+  }
+}
