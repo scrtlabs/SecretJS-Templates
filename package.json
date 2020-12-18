@@ -1,7 +1,7 @@
 {
-  "name": "secret-tutorials",
+  "name": "secretjs-templates",
   "version": "1.0.0",
-  "description": "Figment Learn tutorials for Secret Network",
+  "description": "SecretJS templates for Secret Network",
   "main": "index.js",
   "scripts": {
     "1": "node 1_connecting_to_node/connect.js",
