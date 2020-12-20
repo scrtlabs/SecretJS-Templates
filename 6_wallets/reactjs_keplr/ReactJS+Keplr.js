@@ -38,9 +38,9 @@ class App extends React.Component {
 
     // Use a custom chain with Keplr.
     // On mainnet we don't need this (`experimentalSuggestChain`).
-    // This works well with `enigmampc/secret-network-sw-dev:v1.0.4`:
+    // This works well with `enigmampc/secret-network-sw-dev`:
     //     - https://hub.docker.com/r/enigmampc/secret-network-sw-dev
-    //     - Run a local chain: `docker run -it --rm -p 26657:26657 -p 26656:26656 -p 1337:1337 -v $(shell pwd):/root/code --name secretdev enigmampc/secret-network-sw-dev:v1.0.3`
+    //     - Run a local chain: `docker run -it --rm -p 26657:26657 -p 26656:26656 -p 1337:1337 -v $(shell pwd):/root/code --name secretdev enigmampc/secret-network-sw-dev`
     //     - `alias secretcli='docker exec -it secretdev secretcli'`
     //     - Store a contract: `docker exec -it secretdev secretcli tx compute store /root/code/contract.wasm.gz --from a --gas 10000000 -b block -y`
     // On holodeck, set:
