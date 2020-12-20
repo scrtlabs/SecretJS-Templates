@@ -10,6 +10,7 @@ Templates for working with SecretJS
 * Using contracts
 * Wallets
 * SNIP-20 tokens
+* Consume Websocket contract events
 
 ## 1. Installation
 
@@ -35,3 +36,4 @@ to test locally copy .env.local.example, and for testnet copy .env.testnet.examp
 * `npm run 5` - Create, deploy and use a Secret Contract
 * `cd 6_wallets/keplr && npm i && npm run dev` - Keplr wallet
 * `npm run 7` - SNIP-20 token.  Creating and using fungible tokens
+* `npm run 8` - Consume Websocket contract events
