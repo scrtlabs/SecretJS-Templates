@@ -20,7 +20,7 @@ const main = async () => {
   const accAddress = pubkeyToAddress(pubkey, 'secret');
 
   // Query the account
-  const client = new CosmWasmClient(process.env.SECRET_NODE_URL);
+  const client = new CosmWasmClient(process.env.SECRET_REST_URL);
   const account = await client.getAccount(accAddress);
 
   console.log('mnemonic: ', mnemonic);

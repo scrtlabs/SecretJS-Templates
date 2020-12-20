@@ -28,7 +28,7 @@ const { fromUtf8 } = require("@iov/encoding");
   }
   
   const main = async () => {
-    const httpUrl = process.env.SECRET_NODE_URL;
+    const httpUrl = process.env.SECRET_REST_URL;
   
     // Use key created in tutorial #2
     const mnemonic = process.env.MNEMONIC;

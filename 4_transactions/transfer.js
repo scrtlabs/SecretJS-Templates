@@ -7,7 +7,7 @@ require('dotenv').config();
 const main = async () => {
     
     const mnemonic = process.env.MNEMONIC;
-    const httpUrl = process.env.SECRET_NODE_URL;
+    const httpUrl = process.env.SECRET_REST_URL;
     const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
     const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
     const accAddress = pubkeyToAddress(pubkey, 'secret');

@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const main = async () => {
   // Create connection to DataHub Secret Network node
-  const client = new CosmWasmClient(process.env.SECRET_NODE_URL)
+  const client = new CosmWasmClient(process.env.SECRET_REST_URL)
 
   // 1. Query node info
   const nodeInfo = await client.restClient.nodeInfo();

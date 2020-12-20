@@ -10,7 +10,7 @@ const main = async () => {
     const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
     const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
     const accAddress = pubkeyToAddress(pubkey, 'secret');
-    const client = new CosmWasmClient(process.env.SECRET_NODE_URL);
+    const client = new CosmWasmClient(process.env.SECRET_REST_URL);
 
     const memo = 'My first secret transaction, sending uscrt to my own address';
 

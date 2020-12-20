@@ -27,7 +27,7 @@ const customFees = {
 }
 
 const main = async () => {
-  const httpUrl = process.env.SECRET_NODE_URL;
+  const httpUrl = process.env.SECRET_REST_URL;
 
   // Use key created in tutorial #2
   const mnemonic = process.env.MNEMONIC;
@@ -59,6 +59,7 @@ const main = async () => {
 
   // Get the code ID from the receipt
   const codeId = uploadReceipt.codeId;
+  console.log('codeId: ', codeId);
 
   // Create an instance of the Counter contract, providing a starting count
   const initMsg = {"count": 101}
