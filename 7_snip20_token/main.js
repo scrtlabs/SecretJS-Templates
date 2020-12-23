@@ -1,6 +1,7 @@
 const {
     EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey, unmarshalTx
   } = require("secretjs");
+const { Slip10RawIndex } = require("@iov/crypto");
 const { fromUtf8 } = require("@iov/encoding");
   
   const fs = require("fs");
@@ -98,26 +99,31 @@ const { fromUtf8 } = require("@iov/encoding");
             address: accAddress
         }
     };
-    const balance = await client.queryContractSmart(contractAddress, balanceQuery);
+    let balance = await client.queryContractSmart(contractAddress, balanceQuery);
 
     console.log('My token balance: ', balance);
 
     // Send some tokens
     handleMsg = {
-        transfer_from: 
+        send: 
         {
-            owner: accAddress, amount: "1000", recipient: accAddress
+            owner: accAddress, amount: "1000", recipient: await getAddress(mnemonic, 1)
         }
     };
-
-
-    console.log('Transferring tokens');
+    console.log('Sending tokens');
     response = await client.execute(contractAddress, handleMsg);
-    console.log('Transfer response: ', response)
+    console.log('Send response: ', response)
 
     balance = await client.queryContractSmart(contractAddress, balanceQuery);
     console.log('New token balance', balance)
   };
+
+  // Util to generate another address to send to
+  async function getAddress(mnemonic, index) {
+    const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic, [Slip10RawIndex.normal(index)]);
+    const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
+    return pubkeyToAddress(pubkey, 'secret');
+  }
   
   main();
   
