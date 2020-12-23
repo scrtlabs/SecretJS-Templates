@@ -103,16 +103,16 @@ const { fromUtf8 } = require("@iov/encoding");
 
     console.log('My token balance: ', balance);
 
-    // Send some tokens
+    // Transfer some tokens
     handleMsg = {
-        send: 
+        transfer: 
         {
             owner: accAddress, amount: "1000", recipient: await getAddress(mnemonic, 1)
         }
     };
-    console.log('Sending tokens');
+    console.log('Transferring tokens');
     response = await client.execute(contractAddress, handleMsg);
-    console.log('Send response: ', response)
+    console.log('Transfer response: ', response)
 
     balance = await client.queryContractSmart(contractAddress, balanceQuery);
     console.log('New token balance', balance)
