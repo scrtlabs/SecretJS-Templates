@@ -61,6 +61,10 @@ const main = async () => {
   const codeId = uploadReceipt.codeId;
   console.log('codeId: ', codeId);
 
+  // contract hash, useful for contract composition
+  const contractCodeHash = await client.restClient.getCodeHashByCodeId(codeId);
+  console.log(`Contract hash: ${contractCodeHash}`);
+
   // Create an instance of the Counter contract, providing a starting count
   const initMsg = {"count": 101}
   const contract = await client.instantiate(codeId, initMsg, "My Counter" + Math.ceil(Math.random()*10000));
