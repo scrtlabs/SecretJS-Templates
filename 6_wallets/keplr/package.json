@@ -18,7 +18,7 @@
   "dependencies": {
     "@chainapsis/cosmosjs": "0.0.3-alpha.3",
     "@cosmjs/launchpad": "^0.23.0",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "fast-deep-equal": "^3.1.1",
     "secretjs": "0.10.3"
   }
