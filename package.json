@@ -8,6 +8,7 @@
     "2": "node 2_creating_account/create_account.js",
     "3": "node 3_query_node/query.js",
     "4": "node 4_transactions/transfer.js",
+    "4:batch": "node 4_transactions/send_batch.js",
     "4:advanced": "node 4_transactions/send.js",
     "5": "node 5_contracts/main.js",
     "7": "node 7_snip20_token/main.js",
