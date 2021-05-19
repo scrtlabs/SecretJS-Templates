@@ -4,7 +4,7 @@ const {
 
 require('dotenv').config();
 
-const sleep = (ms) => new Promise((accept) => setTimeout(accept, ms));
+const sleep = (secs) => new Promise((accept) => setTimeout(accept, secs * 1000));
 
 const main = async () => {
     
@@ -48,7 +48,7 @@ const main = async () => {
     const { accountNumber, sequence } = await client.getNonce(accAddress);
     let memo;
     const batchSize = 10;
-    var i;
+    let i;
     const transactions = []
 
     for (i = 0; i < batchSize; i++) {
@@ -72,7 +72,8 @@ const main = async () => {
         if (currentHeight > startHeight) {
             break
         }
-        sleep(1)
+        console.log('Waiting for next block');
+        await sleep(1)
     }
 
     // now search all the transactions
