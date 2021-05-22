@@ -12,13 +12,14 @@
     "4:batch_same_tx": "node 4_transactions/send_batch_same_tx.js",
     "4:advanced": "node 4_transactions/send.js",
     "5": "node 5_contracts/main.js",
+    "5:multi": "node 5_contracts/main_multiExecute.js",
     "7": "node 7_snip20_token/main.js",
     "8": "node 8_websocket/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "secretjs": "^0.10.4",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "secretjs": "^0.11.0"
   }
 }
