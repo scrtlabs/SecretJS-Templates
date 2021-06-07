@@ -22,8 +22,8 @@ window.onload = async () => {
                 await window.keplr.experimentalSuggestChain({
                     chainId: this.chainId,
                     chainName: 'Secret Testnet',
-                    rpc: 'http://bootstrap.secrettestnet.io:26657',
-                    rest: 'https://bootstrap.secrettestnet.io',
+                    rpc: 'http://chainofsecrets.secrettestnet.io:26657',
+                    rest: 'https://chainofsecrets.secrettestnet.io',
                     bip44: {
                         coinType: 529,
                     },
