@@ -75,7 +75,7 @@ window.onload = async () => {
                 this.address = accounts[0].address;
 
                 this.cosmJS = new SigningCosmWasmClient(
-                    'https://bootstrap.secrettestnet.io/',
+                    'https://chainofsecrets.secrettestnet.io/',
                     this.address,
                     keplrOfflineSigner,
                     window.getEnigmaUtils(this.chainId),
