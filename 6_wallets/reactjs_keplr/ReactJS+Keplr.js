@@ -45,8 +45,8 @@ class App extends React.Component {
     //     - Store a contract: `docker exec -it secretdev secretcli tx compute store /root/code/contract.wasm.gz --from a --gas 10000000 -b block -y`
     // On holodeck, set:
     //     1. CHIAN_ID = "holodeck-2"
-    //     2. rpc = "ttp://bootstrap.secrettestnet.io:26657"
-    //     3. rest = "https://bootstrap.secrettestnet.io"
+    //     2. rpc = "ttp://chainofsecrets.secrettestnet.io:26657"
+    //     3. rest = "https://chainofsecrets.secrettestnet.io"
     //     4. chainName = Whatever you like
     // For more examples, go to: https://github.com/chainapsis/keplr-example/blob/master/src/main.js
     await window.keplr.experimentalSuggestChain({
@@ -103,7 +103,7 @@ class App extends React.Component {
     const accounts = await this.keplrOfflineSigner.getAccounts();
 
     this.secretjs = new SigningCosmWasmClient(
-      "http://localhost:1337", // holodeck - https://bootstrap.secrettestnet.io; mainnet - user your LCD/REST provider
+      "http://localhost:1337", // holodeck - https://chainofsecrets.secrettestnet.io; mainnet - user your LCD/REST provider
       accounts[0].address,
       this.keplrOfflineSigner,
       window.getEnigmaUtils(CHIAN_ID),
