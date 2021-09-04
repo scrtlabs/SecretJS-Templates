@@ -51,11 +51,16 @@ const main = async () => {
       txEncryptionSeed, customFees
   );
   console.log(`Wallet address=${accAddress}`)
-  
+
   // Upload the wasm of a simple contract
+  const codeMeta = {
+    source: "https://not-yet-published.counter",
+    builder: "confio/cosmwasm-opt:0.7.3",
+  };
+
   const wasm = fs.readFileSync("5_contracts/contract.wasm");
   console.log('Uploading contract')
-  const uploadReceipt = await client.upload(wasm, {});
+  const uploadReceipt = await client.upload(wasm, codeMeta);
 
   // Get the code ID from the receipt
   const codeId = uploadReceipt.codeId;

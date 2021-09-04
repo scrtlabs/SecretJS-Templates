@@ -17,7 +17,7 @@ const main = async () => {
   console.log('Latest block: ', blocksLatest);
   
   // 2.2 Block by number, defaults to latest but lets get one with TXs
-  const blocks = await client.restClient.blocks(398149);
+  const blocks = await client.restClient.blocks(1);
   console.log('Blocks: ', blocks);
 
   // 3. Query account

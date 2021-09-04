@@ -55,9 +55,12 @@ const { fromUtf8 } = require("@iov/encoding");
     console.log(`Wallet address=${accAddress}`)
     
     // Upload the wasm of a simple contract
+    const codeMeta = {
+        source: "https://not-yet-published.cw-erc20",
+        builder: "confio/cosmwasm-opt:0.7.3",
+    };
     const wasm = fs.readFileSync("7_snip20_token/contract/contract.wasm");
-    console.log('Uploading contract')
-    const uploadReceipt = await client.upload(wasm, {});
+    const uploadReceipt = await client.upload(wasm, codeMeta);
   
     // Get the code ID from the receipt
     const codeId = uploadReceipt.codeId;
