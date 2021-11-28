@@ -1,8 +1,8 @@
 const {
-    EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey, unmarshalTx
+    EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey
   } = require("secretjs");
 const { Slip10RawIndex } = require("@iov/crypto");
-const { fromUtf8 } = require("@iov/encoding");
+const { Encoding } = require("@iov/encoding");
   
   const fs = require("fs");
   
@@ -90,7 +90,7 @@ const { fromUtf8 } = require("@iov/encoding");
     console.log('response: ', response);
 
     // Convert the UTF8 bytes to String, before parsing the JSON for the api key.
-    const apiKey = JSON.parse(fromUtf8(response.data)).create_viewing_key.key;
+    const apiKey = JSON.parse(Encoding.fromUtf8(response.data)).create_viewing_key.key;
 
     // Query balance with the api key
     const balanceQuery = { 
