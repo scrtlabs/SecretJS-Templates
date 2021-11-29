@@ -63,6 +63,8 @@ const main = async () => {
             signatures: [signature],
         };
         const { logs, transactionHash } = await client.postTx(signedTx);
+        console.log(`logs=${logs}`)
+        console.log(`Posted transactionHash=${transactionHash} with memo=${memo}`);
         transactions.push(transactionHash);
     }
 
@@ -80,8 +82,19 @@ const main = async () => {
     for (i = 0; i < transactions.length; i++) {
         const query = {id: transactions[i]}
         console.log('Searching: ', query);
-        const tx = await client.searchTx(query)
-        console.log('Transaction: ', tx);
+
+        // search forever
+        while (true) {
+            try{
+                const tx = await client.searchTx(query);
+                console.log('Transaction: ', tx);
+                break
+            } catch(error) {
+                console.error(error)
+                console.log('searching again');
+                await sleep(1)
+            }
+        }
     }
 }
 
