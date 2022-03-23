@@ -1,32 +1,37 @@
-const {
-  CosmWasmClient
-} = require("secretjs");
+const { SecretNetworkClient } = require("secretjs");
 
-require('dotenv').config();
+require("dotenv").config();
 
-const main = async () => {
-  // Create connection to DataHub Secret Network node
-  const client = new CosmWasmClient(process.env.SECRET_REST_URL)
+(async () => {
+  // Create a readonly connection to Secret Network node
+  // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
+  const secretjs = await SecretNetworkClient.create({
+    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  });
 
   // 1. Query node info
-  const nodeInfo = await client.restClient.nodeInfo();
-  console.log('Node Info: ', nodeInfo);
+  const nodeInfo = await secretjs.query.tendermint.getNodeInfo({});
+  console.log("Node Info:", nodeInfo);
 
-  // 2.1 Query latest blocks
-  const blocksLatest = await client.restClient.blocksLatest();
-  console.log('Latest block: ', blocksLatest);
-  
-  // 2.2 Block by number, defaults to latest but lets get one with TXs
-  const blocks = await client.restClient.blocks(398149);
-  console.log('Blocks: ', blocks);
+  // 2.1 Get the latest block
+  const latestBlock = await secretjs.query.tendermint.getLatestBlock({});
+  console.log("Latest Block:", latestBlock);
+
+  // 2.2 Get block by height
+  const blockHeight = String(Number(latestBlock.block.header.height) - 10);
+  const blockByHeight = await secretjs.query.tendermint.getBlockByHeight({
+    height: blockHeight,
+  });
+  console.log(`Block ${blockHeight}:`, blockByHeight);
 
   // 3. Query account
-  const account = await client.getAccount(process.env.ADDRESS)
-  console.log('Account: ', account);
-}
-
-main().then(resp => {
-  console.log(resp);
-}).catch(err => {
-  console.log(err);
-})
+  // This will throw if you don't have any SCRT in it
+  try {
+    const account = await secretjs.query.auth.account({
+      address: process.env.ADDRESS,
+    });
+    console.log("Found Account:", account);
+  } catch (error) {
+    console.log("Account Not Found:", error.message);
+  }
+})();
