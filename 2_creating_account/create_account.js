@@ -1,35 +1,24 @@
-const {
-  CosmWasmClient, Secp256k1Pen, pubkeyToAddress, encodeSecp256k1Pubkey
-} = require("secretjs");
+const { SecretNetworkClient, Wallet } = require("secretjs");
 
-const { Bip39, Random } = require("@iov/crypto");
+require("dotenv").config();
 
-require('dotenv').config();
+(async () => {
+  // Create a new account
+  // Docs: https://github.com/scrtlabs/secret.js#wallet
+  const wallet = new Wallet();
 
-const main = async () => {
-  // Create random address and mnemonic
-  const mnemonic = Bip39.encode(Random.getBytes(16)).toString();
-  
-  // This wraps a single keypair and allows for signing.
-  const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
+  // Create a readonly connection to Secret Network node
+  // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
+  const secretjs = await SecretNetworkClient.create({
+    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  });
 
-  // Get the public key
-  const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
+  const accountBalance = await secretjs.query.bank.balance({
+    address: wallet.address,
+    denom: "uscrt",
+  });
 
-  // Get the wallet address
-  const accAddress = pubkeyToAddress(pubkey, 'secret');
-
-  // Query the account
-  const client = new CosmWasmClient(process.env.SECRET_REST_URL);
-  const account = await client.getAccount(accAddress);
-
-  console.log('mnemonic: ', mnemonic);
-  console.log('address: ', accAddress);
-  console.log('account: ', account);
-}
-
-main().then(resp => {
-  console.log(resp);
-}).catch(err => {
-  console.log(err);
-})
+  console.log("mnemonic:", wallet.mnemonic);
+  console.log("address:", wallet.address);
+  console.log("balance:", `${accountBalance.balance.amount / 10e6} SCRT`); // 1,000,00 uscrt = 1 SCRT
+})();

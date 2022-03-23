@@ -8,18 +8,18 @@
     "2": "node 2_creating_account/create_account.js",
     "3": "node 3_query_node/query.js",
     "4": "node 4_transactions/transfer.js",
+    "5": "node 5_contracts/main.js",
+    "7": "node 7_snip20_token/main.js",
+    "8": "node 8_websocket/main.js",
     "4:batch": "node 4_transactions/send_batch.js",
     "4:batch_same_tx": "node 4_transactions/send_batch_same_tx.js",
     "4:advanced": "node 4_transactions/send.js",
-    "5": "node 5_contracts/main.js",
-    "5:multi": "node 5_contracts/main_multiExecute.js",
-    "7": "node 7_snip20_token/main.js",
-    "8": "node 8_websocket/main.js"
+    "5:multi": "node 5_contracts/main_multiExecute.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "secretjs": "^0.11.0"
+    "secretjs": "1.2.0-beta.56"
   }
 }
