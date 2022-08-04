@@ -13,13 +13,11 @@ const main = async () => {
   // Create a connection to Secret Network node
   // Pass in a wallet that can sign transactions
   // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
-  // const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
   const secretjs = await SecretNetworkClient.create({
     grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
     wallet: wallet,
     walletAddress: wallet.address,
     chainId: process.env.SECRET_CHAIN_ID,
-    // encryptionUtils: window.getEnigmaUtils(process.env.CHAIN_ID)
   });
   console.log(`Wallet address=${wallet.address}`);
 
@@ -100,12 +98,12 @@ const main = async () => {
   // Query again to confirm it worked
   console.log("Querying contract for updated count");
   const newCount = await secretjs.query.compute.queryContract({
-    contractAddress: 'secret12k65eh8zvhjcwcnqxjh97pmztu34938602eq87',
-    codeHash: 'a4a0c144745e3240bbfcd3f3d0d125a607e265a141ee812f71055054ceb4d8d2',
+    contractAddress: contractAddress,
+    codeHash: contractCodeHash,
     query: { get_count: {} },
   });
 
-  console.log(`New Count=${JSON.stringify(newCount)}`);
+  console.log(`New Count=${newCount.count}`);
 };
 
 main();
