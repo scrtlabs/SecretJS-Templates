@@ -57,11 +57,11 @@ const main = async () => {
 
     if (tx.code === 0) {
       console.log(
-        `tx ${i} (txhash ${txhash}) was successfull in block ${tx.height}`
+        `tx ${i} (txhash ${txhash}) was successful in block ${tx.height}`
       );
     } else {
       console.log(
-        `tx ${i} (txhash ${txhash}) was unsuccessfull in block ${tx.height}, error log: ${tx.rawLog}`
+        `tx ${i} (txhash ${txhash}) was unsuccessful in block ${tx.height}, error log: ${tx.rawLog}`
       );
     }
 
