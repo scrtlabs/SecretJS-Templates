@@ -1,129 +1,155 @@
-const {
-    EnigmaUtils, Secp256k1Pen, SigningCosmWasmClient, pubkeyToAddress, encodeSecp256k1Pubkey, unmarshalTx
-  } = require("secretjs");
-const { Slip10RawIndex } = require("@iov/crypto");
-const { fromUtf8 } = require("@iov/encoding");
-  
-  const fs = require("fs");
-  
-  // Load environment variables
-  require('dotenv').config();
-  
-  const customFees = {
-    upload: {
-        amount: [{ amount: "2000000", denom: "uscrt" }],
-        gas: "2000000",
+const { Wallet, SecretNetworkClient, EncryptionUtilsImpl } = require("secretjs");
+const { fromUtf8 } = require("@cosmjs/encoding");
+
+const fs = require("fs");
+
+// Load environment variables
+require("dotenv").config();
+
+const main = async () => {
+  const wallet = new Wallet(process.env.MNEMONIC);
+
+  // Create a connection to Secret Network node
+  // Pass in a wallet that can sign transactions
+  // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
+  const txEncryptionSeed = EncryptionUtilsImpl.GenerateNewSeed();
+  const secretjs = await SecretNetworkClient.create({
+    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+    wallet: wallet,
+    walletAddress: wallet.address,
+    chainId: process.env.SECRET_CHAIN_ID,
+    txEncryptionSeed: txEncryptionSeed
+  });
+  console.log(`Wallet address=${wallet.address}`);
+  const accAddress = wallet.address;
+
+  // Upload the wasm of a simple contract
+  const wasm = fs.readFileSync("7_snip20_token/contract/contract.wasm");
+  console.log("Uploading contract");
+
+  let tx = await secretjs.tx.compute.storeCode(
+    {
+      sender: wallet.address,
+      wasmByteCode: wasm,
+      source: "",
+      builder: "",
     },
-    init: {
-        amount: [{ amount: "500000", denom: "uscrt" }],
-        gas: "500000",
-    },
-    exec: {
-        amount: [{ amount: "500000", denom: "uscrt" }],
-        gas: "500000",
-    },
-    send: {
-        amount: [{ amount: "80000", denom: "uscrt" }],
-        gas: "80000",
-    },
-  }
-  
-  const main = async () => {
-    const httpUrl = process.env.SECRET_REST_URL;
-  
-    // Use key created in tutorial #2
-    const mnemonic = process.env.MNEMONIC;
-  
-    // A pen is the most basic tool you can think of for signing.
-    // This wraps a single keypair and allows for signing.
-    const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic);
-  
-    // Get the public key
-    const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
-  
-    // get the wallet address
-    const accAddress = pubkeyToAddress(pubkey, 'secret');
-  
-    const txEncryptionSeed = EnigmaUtils.GenerateNewSeed();
-    
-    const client = new SigningCosmWasmClient(
-        httpUrl,
-        accAddress,
-        (signBytes) => signingPen.sign(signBytes),
-        txEncryptionSeed, customFees
-    );
-    console.log(`Wallet address=${accAddress}`)
-    
-    // Upload the wasm of a simple contract
-    const wasm = fs.readFileSync("7_snip20_token/contract/contract.wasm");
-    console.log('Uploading contract')
-    const uploadReceipt = await client.upload(wasm, {});
-  
-    // Get the code ID from the receipt
-    const codeId = uploadReceipt.codeId;
-  
-    // Create an instance of the token contract, minting some tokens to our wallet
-    const initMsg = {
-        "name":"test",
-        "symbol":"TST",
-        "decimals":6,
-        "prng_seed": Buffer.from("Something really random").toString('base64'),
-        "admin": accAddress,
-        "initial_balances": [{
-                "address": accAddress,
-                "amount": "1000000000"
-            }
-        ]
+    {
+      gasLimit: 2_000_000,
     }
-    const contract = await client.instantiate(codeId, initMsg, "My Token" + Math.ceil(Math.random()*10000));
-    console.log('contract: ', contract);
-    
-    const contractAddress = contract.contractAddress;
-  
-    // Entropy: Secure implementation is left to the client, but it is recommended to use base-64 encoded random bytes and not predictable inputs.
-    const entropy = "Another really random thing";
+  );
 
+  const codeId = Number(
+    tx.arrayLog.find((log) => log.type === "message" && log.key === "code_id")
+      .value
+  );
 
-    let handleMsg = { create_viewing_key: {entropy: entropy} };
-    console.log('Creating viewing key');
-    response = await client.execute(contractAddress, handleMsg);
-    console.log('response: ', response);
+  console.log("codeId: ", codeId);
+  // contract hash, useful for contract composition
+  const contractCodeHash = await secretjs.query.compute.codeHash(codeId);
+  console.log(`Contract hash: ${contractCodeHash}`);
 
-    // Convert the UTF8 bytes to String, before parsing the JSON for the api key.
-    const apiKey = JSON.parse(fromUtf8(response.data)).create_viewing_key.key;
-
-    // Query balance with the api key
-    const balanceQuery = { 
-        balance: {
-            key: apiKey, 
-            address: accAddress
-        }
-    };
-    let balance = await client.queryContractSmart(contractAddress, balanceQuery);
-
-    console.log('My token balance: ', balance);
-
-    // Transfer some tokens
-    handleMsg = {
-        transfer: 
-        {
-            owner: accAddress, amount: "1000", recipient: await getAddress(mnemonic, 1)
-        }
-    };
-    console.log('Transferring tokens');
-    response = await client.execute(contractAddress, handleMsg);
-    console.log('Transfer response: ', response)
-
-    balance = await client.queryContractSmart(contractAddress, balanceQuery);
-    console.log('New token balance', balance)
+  // Create an instance of the token contract, minting some tokens to our wallet
+  const initMsg = {
+    name: "test",
+    symbol: "TST",
+    decimals: 6,
+    prng_seed: Buffer.from("Something really random").toString("base64"),
+    admin: accAddress,
+    initial_balances: [
+      {
+        address: accAddress,
+        amount: "1000000000",
+      },
+    ],
   };
 
-  // Util to generate another address to send to
-  async function getAddress(mnemonic, index) {
-    const signingPen = await Secp256k1Pen.fromMnemonic(mnemonic, [Slip10RawIndex.normal(index)]);
-    const pubkey = encodeSecp256k1Pubkey(signingPen.pubkey);
-    return pubkeyToAddress(pubkey, 'secret');
-  }
-  
-  main();
-  
+  tx = await secretjs.tx.compute.instantiateContract(
+    {
+      codeId: codeId,
+      sender: wallet.address,
+      codeHash: contractCodeHash,
+      initMsg: initMsg,
+      label: "My Token" + Math.ceil(Math.random() * 10000),
+    },
+    {
+      gasLimit: 100_000,
+    }
+  );
+
+  //Find the contract_address in the logs
+  const contractAddress = tx.arrayLog.find(
+    (log) => log.type === "message" && log.key === "contract_address"
+  ).value;
+  console.log(`contractAddress=${contractAddress}`);
+
+  // Entropy: Secure implementation is left to the client, but it is recommended to use base-64 encoded random bytes and not predictable inputs.
+  const entropy = "Another really random thing";
+
+  let handleMsg = { create_viewing_key: { entropy: entropy } };
+  console.log("Creating viewing key");
+  tx = await secretjs.tx.compute.executeContract(
+    {
+      sender: wallet.address,
+      contractAddress: contractAddress,
+      codeHash: contractCodeHash, // optional but way faster
+      msg: handleMsg,
+      sentFunds: [], // optional
+    },
+    {
+      gasLimit: 100_000,
+    }
+  );
+
+  // Convert the UTF8 bytes to String, before parsing the JSON for the api key.
+  const apiKey = JSON.parse(fromUtf8(tx.data[0])).create_viewing_key.key;
+
+  // Query balance with the api key
+  const balanceQuery = {
+    balance: {
+      key: apiKey,
+      address: accAddress,
+    },
+  };
+
+  let balance = await secretjs.query.compute.queryContract({
+    contractAddress: contractAddress,
+    codeHash: contractCodeHash,
+    query: balanceQuery,
+  });
+
+  console.log("My token balance: ", balance);
+
+  // Transfer some tokens to a new wallet
+  const anotherWallet = new Wallet();
+
+  handleMsg = {
+    transfer: {
+      owner: accAddress,
+      amount: "10000000",
+      recipient: anotherWallet.address,
+    },
+  };
+  console.log("Transferring tokens");
+
+  tx = await secretjs.tx.compute.executeContract(
+    {
+      sender: wallet.address,
+      contractAddress: contractAddress,
+      codeHash: contractCodeHash,
+      msg: handleMsg
+    },
+    {
+      gasLimit: 100_000,
+    }
+  );
+
+  balance = await secretjs.query.compute.queryContract({
+    contractAddress: contractAddress,
+    codeHash: contractCodeHash,
+    query: balanceQuery,
+  });
+  console.log("New token balance", balance);
+};
+
+main();
