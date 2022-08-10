@@ -4,63 +4,30 @@
 // `yarn add secretjs` (or `npm i secretjs`)
 // Then copy the content of this file into `src/App.js`
 
-
-
 import React, { useState, useEffect } from "react";
 const { SecretNetworkClient } = require("secretjs");
 
 const DENOM = 'SCRT';
 const MINIMAL_DENOM = 'uscrt';
 
-// Testnet, using a known contract
-const GRPCWEB_URL = 'https://grpc.pulsar.scrttestnet.com';
-const LCD_URL = 'https://api.pulsar.scrttestnet.com';
-const RPC_URL = 'https://rpc.pulsar.scrttestnet.com';
-const CHAIN_ID = 'pulsar-2';
-const CHAIN_NAME = 'Secret Testnet'; 
-const contractAddress = "secret1vuph04rrzxs0admn5w030ek3hrtacttwcdwtvj";
+// Testnet
+// const GRPCWEB_URL = 'https://grpc.pulsar.scrttestnet.com';
+// const LCD_URL = 'https://api.pulsar.scrttestnet.com';
+// const RPC_URL = 'https://rpc.pulsar.scrttestnet.com';
+// const CHAIN_ID = 'pulsar-2';
+// const CHAIN_NAME = 'Secret Testnet'; 
 
-// secretdev / local secret, be sure to set the contract address to the one you deployed
-// const CHAIN_NAME = 'Local Testnet';  //Anything you want
-// const GRPCWEB_URL = 'http://localhost:9091';
-// const LCD_URL = 'http://localhost:1317';
-// const RPC_URL = 'http://localhost:26657';
-// const CHAIN_ID = "secretdev-1";
-// const contractAddress = 'secret1jxv9as6rrv6xztd0thas4q83gsy42p5kvwe6m4';
+// secretdev / local secret
+const CHAIN_NAME = 'Local Testnet';  //Anything you want
+const GRPCWEB_URL = 'http://localhost:9091';
+const LCD_URL = 'http://localhost:1317';
+const RPC_URL = 'http://localhost:26657';
+const CHAIN_ID = "secretdev-1";
 
 export default function App() {
   const [myAddress, setMyAddress] = useState("");
-  const [count, setCount] = useState(0);
-  const [secretjs, setSecretjs] = useState();
+  const [balance, setBalance] = useState();
   const [keplrReady, setKeplrReady] = useState(false);
-
-   const increment = async () => {
-    console.log("incrementing");
-
-    try {
-      const tx = await secretjs.tx.compute.executeContract(
-        {
-          sender: myAddress,
-          contractAddress: contractAddress,
-          msg: { increment: {} }
-        },
-        {
-          gasLimit: 100_000
-        }
-      );
-      console.log(`broadcasted tx=${JSON.stringify(tx)}`);
-
-      const { count } = await secretjs.query.compute.queryContract({
-        contractAddress: contractAddress,
-        query: { get_count: {} }
-      });
-      console.log(`counter=${count}`);
-
-      setCount(count);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   useEffect(() => {
 
@@ -152,28 +119,30 @@ export default function App() {
         walletAddress: myAddress,
         encryptionUtils: window.getEnigmaUtils(CHAIN_ID),
       });
-
-      // test contract query
-      const { count } = await secretjs.query.compute.queryContract({
-        contractAddress: contractAddress,
-        query: { get_count: {} }
-      });
-
-      setCount(count);
+      
+      const {
+        balance: { amount },
+      } = await secretjs.query.bank.balance(
+        {
+          address: myAddress,
+          denom: MINIMAL_DENOM,
+        }
+      );
+      setBalance(new Intl.NumberFormat("en-US", {}).format(amount / 1e6))
 
       setKeplrReady(true);
       setMyAddress(myAddress);
-      setSecretjs(secretjs);
       
     }
       getKeplr();
       
     return () => {};
   }, []);
+  
 
   return (
     <div className="App">
-      <h1>Secret Counter</h1>
+      <h1>Secret Dapp</h1>
 
       {!keplrReady ? 
           <h1>Waiting for Keplr wallet integration...</h1>
@@ -183,10 +152,7 @@ export default function App() {
             <strong>My Address:</strong> {myAddress}
           </p>
           <p>
-            <strong>Counter:</strong> {count}
-          </p>
-          <p>
-            <button onClick={increment}>Increment</button>
+            <strong>Balance:</strong> {balance} SCRT
           </p>
         </div>
       }
