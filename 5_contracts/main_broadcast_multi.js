@@ -1,4 +1,4 @@
-const { Wallet, SecretNetworkClient } = require("secretjs");
+const { Wallet, SecretNetworkClient, MsgExecuteContract } = require("secretjs");
 
 const fs = require("fs");
 
@@ -49,7 +49,7 @@ const main = async () => {
   console.log(`Contract hash: ${contractCodeHash}`);
 
   // Create an instance of the Counter contract, providing a starting count
-  const initMsg = { count: 101 };
+  const initMsg = { count: 0 };
   tx = await secretjs.tx.compute.instantiateContract(
     {
       codeId: codeId,
@@ -80,20 +80,23 @@ const main = async () => {
   console.log(`Count=${count}`);
 
   // Increment the counter
-  console.log("Updating count");
+  console.log("Updating count twice");
 
-  tx = await secretjs.tx.compute.executeContract(
-    {
-      sender: wallet.address,
-      contractAddress: contractAddress,
-      codeHash: contractCodeHash, // optional but way faster
-      msg: {increment: {}},
-      sentFunds: [], // optional
-    },
-    {
-      gasLimit: 100_000,
-    }
-  );
+  const incrMessage = new MsgExecuteContract({
+    sender: wallet.address,
+    contractAddress: contractAddress,
+    codeHash: contractCodeHash,
+    msg: {increment: {}}
+  });
+
+  
+  // Smulate the 2 messages, so we can estimate the gas limit
+  const sim = await secretjs.tx.simulate([incrMessage, incrMessage]);
+  
+  // multiple requests to increment
+  tx = await secretjs.tx.broadcast([incrMessage, incrMessage], {
+    gasLimit: Math.ceil(sim.gasInfo.gasUsed * 1.1),
+  });
 
   // Query again to confirm it worked
   console.log("Querying contract for updated count");

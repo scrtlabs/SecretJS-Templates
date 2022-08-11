@@ -1,25 +1,18 @@
-const { CosmWasmClient } = require("secretjs");
+const { SecretNetworkClient } = require("secretjs");
 
-require('dotenv').config();
+require("dotenv").config();
 
-const main = async () => {
-  // Create connection to DataHub Secret Network node
-  const client = new CosmWasmClient(process.env.SECRET_REST_URL)
+(async () => {
+  // Create a readonly connection to Secret Network node
+  // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
+  const secretjs = await SecretNetworkClient.create({
+    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  });
 
-  // Query chain ID
-  const chainId = await client.getChainId()
+  // Query chain id & height
+  const latestBlock = await secretjs.query.tendermint.getLatestBlock({});
+  console.log("ChainId:", latestBlock.block.header.chainId);
+  console.log("Block height:", latestBlock.block.header.height);
 
-  // Query chain height
-  const height = await client.getHeight()
-
-  console.log("ChainId:", chainId);
-  console.log("Block height:", height);
-
-  console.log('Successfully connected to Secret Network');
-}
-
-main().then(resp => {
-  console.log(resp);
-}).catch(err => {
-  console.log(err);
-})
+  console.log("Successfully connected to Secret Network");
+})();
