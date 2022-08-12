@@ -4,7 +4,7 @@ The example contract here is already compiled as `contract.wasm`, [learn how to 
 
 - `main.js` uploads `contract.wasm`, instantiates the contract, then executes to update the state, ie increment the counter, and finally queries the contract state.
 
-- `main_broadcast.js` does all the same things, the variation demonstrates how to conveniently execute multiple messages in the same transaction.
+- `main_broadcast_batch.js` does all the same things, the variation demonstrates how to conveniently execute multiple messages in the same transaction.
 
     To execute a single message, we do this in the first example;
 
@@ -72,3 +72,48 @@ The example contract here is already compiled as `contract.wasm`, [learn how to 
     ```
 
     You can find more examples of broadcasting complex transactions on [Secret.JS](https://github.com/scrtlabs/secret.js#secretjstxbroadcast)
+
+- `main_broadcast_batch_txs.js` does all the same things too, the variation demonstrates how to conveniently execute multiple messages in the same block.
+
+    To achieve this we do the following;
+    1. Query the account number and sequence, so we can manually set the sequence number for each transaction.
+    ``` 
+      const account = await secretjs.query.auth.account({
+        address: wallet.address,
+      });
+    ```
+    
+    2. Set the TxOptions for each transaction
+    ```
+        const tx = await secretjs.tx.compute.executeContract(
+            {
+                sender: wallet.address,
+                contractAddress: contractAddress,
+                codeHash: contractCodeHash, // optional but way faster
+                msg: {increment: {}},
+                sentFunds: [], // optional
+            },
+            {
+                gasLimit: 25_000,
+                gasPriceInFeeDenom: 0.25,
+                memo: `send batch increment counter example #${i + 1}`,
+                waitForCommit: false,
+                explicitSignerData: {
+                accountNumber: Number(account.account.accountNumber),
+                sequence: Number(account.account.sequence) + i,
+                chainId: process.env.SECRET_CHAIN_ID,
+                },
+            }
+        );
+    ```
+    - `waitForCommit` is false, so the function returns with only the transactionHash set.
+
+    - `explicitSignerData` contains the account number and sequence number, incrementing for every new transaction.
+    
+    3. Keep track of the transaction hashes, to query once all the txs have been broadcast. 
+        ```
+            txHashes.push(tx.transactionHash);
+        ```
+    
+    
+    
