@@ -11,7 +11,8 @@
     "4:batch": "node 4_transactions/transfer_batch.js",
     "4:batch_same_tx": "node 4_transactions/transfer_batch_same_tx.js",
     "5": "node 5_contracts/main.js",
-    "5:multi": "node 5_contracts/main_broadcast_multi.js",
+    "5:batch": "node 5_contracts/main_broadcast_batch_txs.js",
+    "5:batch_same_tx": "node 5_contracts/main_broadcast_batch_same_tx.js",
     "7": "node 7_snip20_token/main.js",
     "8": "node 8_websocket/main.js"
   },
