@@ -86,7 +86,7 @@ const main = async () => {
   });
 
   const txHashes = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) {
     const tx = await secretjs.tx.compute.executeContract(
       {
         sender: wallet.address,
