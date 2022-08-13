@@ -39,5 +39,7 @@ Make sure to copy `.env.testnet.example` file to `.env` file and update its cont
 - `npm run 5:batch` - Create, deploy and use a Secret Contract with multiple txs in the same block
 - `npm run 5:batch_same_tx` - Create, deploy and use a Secret Contract with multiple messages in the same transaction
 - `cd 6_wallets/keplr && npm i && npm run dev` - Keplr wallet
+
+    NB More Keplr examples in the [Wallets section](6_wallets/README.md)
 - `npm run 7` - SNIP-20 token. Creating and using fungible tokens
 - `cd 8_websocket && npm i && npm run dev` - Consume Websocket contract events
