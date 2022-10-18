@@ -1,4 +1,4 @@
-const { Wallet, SecretNetworkClient, EncryptionUtilsImpl } = require("secretjs");
+const { Wallet, SecretNetworkClient, EncryptionUtilsImpl, MsgExecuteContractResponse } = require("secretjs");
 const { fromUtf8 } = require("@cosmjs/encoding");
 
 const fs = require("fs");
@@ -73,7 +73,7 @@ const main = async () => {
       label: "My Token" + Math.ceil(Math.random() * 10000),
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 135_000,
     }
   );
 
@@ -97,12 +97,12 @@ const main = async () => {
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 125_000,
     }
   );
 
   // Convert the UTF8 bytes to String, before parsing the JSON for the api key.
-  const apiKey = JSON.parse(fromUtf8(tx.data[0])).create_viewing_key.key;
+  const apiKey = JSON.parse(fromUtf8(MsgExecuteContractResponse.decode(tx.data[0]).data)).create_viewing_key.key;
 
   // Query balance with the api key
   const balanceQuery = {
@@ -140,7 +140,7 @@ const main = async () => {
       msg: handleMsg
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 160_000,
     }
   );
 
