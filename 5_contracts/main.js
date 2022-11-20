@@ -59,7 +59,7 @@ const main = async () => {
       label: "My Counter" + Math.ceil(Math.random() * 10000),
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 120_000,
     }
   );
 
@@ -91,7 +91,7 @@ const main = async () => {
       sentFunds: [], // optional
     },
     {
-      gasLimit: 100_000,
+      gasLimit: 120_000,
     }
   );
 
