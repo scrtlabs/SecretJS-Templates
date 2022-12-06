@@ -146,7 +146,7 @@ document.sendForm.onsubmit = () => {
       alert("Failed to send tx: " + result.log || result.rawLog);
     } else {
       alert(
-        "Successfully sent tx: https://explorer.secrettestnet.io/transactions/" +
+        "Successfully sent tx: https://secretnodes.com/pulsar/transactions/" +
           result.transactionHash
       );
     }
