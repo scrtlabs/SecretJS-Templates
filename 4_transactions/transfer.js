@@ -9,18 +9,20 @@ const main = async () => {
   // Create a connection to Secret Network node
   // Pass in a wallet that can sign transactions
   // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
-  const secretjs = await SecretNetworkClient.create({
-    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  const secretjs = new SecretNetworkClient({
+    url: process.env.SECRET_REST_URL,
     wallet: wallet,
     walletAddress: wallet.address,
     chainId: process.env.SECRET_CHAIN_ID,
   });
 
+  console.log(`wallet.address= ${wallet.address}`)
+
   const tx = await secretjs.tx.bank.send(
     {
       amount: [{ amount: "1", denom: "uscrt" }],
-      fromAddress: wallet.address,
-      toAddress: wallet.address, // Set recipient to sender for testing
+      from_address: wallet.address,
+      to_address: wallet.address, // Set recipient to sender for testing
     },
     {
       gasLimit: 20_000,

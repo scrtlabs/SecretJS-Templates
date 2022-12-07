@@ -13,8 +13,8 @@ const main = async () => {
   // Pass in a wallet that can sign transactions
   // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
   const txEncryptionSeed = EncryptionUtilsImpl.GenerateNewSeed();
-  const secretjs = await SecretNetworkClient.create({
-    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  const secretjs = new SecretNetworkClient({
+    url: process.env.SECRET_REST_URL,
     wallet: wallet,
     walletAddress: wallet.address,
     chainId: process.env.SECRET_CHAIN_ID,
@@ -30,7 +30,7 @@ const main = async () => {
   let tx = await secretjs.tx.compute.storeCode(
     {
       sender: wallet.address,
-      wasmByteCode: wasm,
+      wasm_byte_code: wasm,
       source: "",
       builder: "",
     },
@@ -46,8 +46,8 @@ const main = async () => {
 
   console.log("codeId: ", codeId);
   // contract hash, useful for contract composition
-  const contractCodeHash = await secretjs.query.compute.codeHash(codeId);
-  console.log(`Contract hash: ${contractCodeHash}`);
+  const {code_hash} = await secretjs.query.compute.codeHashByCodeId({code_id: codeId});
+  console.log(`Contract hash: ${code_hash}`);
 
   // Create an instance of the token contract, minting some tokens to our wallet
   const initMsg = {
@@ -66,10 +66,10 @@ const main = async () => {
 
   tx = await secretjs.tx.compute.instantiateContract(
     {
-      codeId: codeId,
+      code_id: codeId,
       sender: wallet.address,
-      codeHash: contractCodeHash,
-      initMsg: initMsg,
+      code_hash,
+      init_msg: initMsg,
       label: "My Token" + Math.ceil(Math.random() * 10000),
     },
     {
@@ -91,10 +91,10 @@ const main = async () => {
   tx = await secretjs.tx.compute.executeContract(
     {
       sender: wallet.address,
-      contractAddress: contractAddress,
-      codeHash: contractCodeHash, // optional but way faster
+      contract_address: contractAddress,
+      code_hash,
       msg: handleMsg,
-      sentFunds: [], // optional
+      sent_funds: [], // optional
     },
     {
       gasLimit: 125_000,
@@ -113,8 +113,8 @@ const main = async () => {
   };
 
   let balance = await secretjs.query.compute.queryContract({
-    contractAddress: contractAddress,
-    codeHash: contractCodeHash,
+    contract_address: contractAddress,
+    code_hash,
     query: balanceQuery,
   });
 
@@ -135,8 +135,8 @@ const main = async () => {
   tx = await secretjs.tx.compute.executeContract(
     {
       sender: wallet.address,
-      contractAddress: contractAddress,
-      codeHash: contractCodeHash,
+      contract_address: contractAddress,
+      code_hash,
       msg: handleMsg
     },
     {
@@ -145,11 +145,10 @@ const main = async () => {
   );
 
   balance = await secretjs.query.compute.queryContract({
-    contractAddress: contractAddress,
-    codeHash: contractCodeHash,
+    contract_address: contractAddress,
+    code_hash,
     query: balanceQuery,
   });
-  console.log("New token balance", balance);
 };
 
 main();
