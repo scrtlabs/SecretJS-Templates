@@ -13,8 +13,8 @@ const main = async () => {
   // Create a connection to Secret Network node
   // Pass in a wallet that can sign transactions
   // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
-  const secretjs = await SecretNetworkClient.create({
-    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  const secretjs = new SecretNetworkClient({
+    url: process.env.SECRET_REST_URL,
     wallet: wallet,
     walletAddress: wallet.address,
     chainId: process.env.SECRET_CHAIN_ID,
@@ -28,7 +28,7 @@ const main = async () => {
   let tx = await secretjs.tx.compute.storeCode(
     {
       sender: wallet.address,
-      wasmByteCode: wasm,
+      wasm_byte_code: wasm,
       source: "",
       builder: "",
     },
@@ -45,17 +45,17 @@ const main = async () => {
   console.log("codeId: ", codeId);
 
   // contract hash, useful for contract composition
-  const contractCodeHash = await secretjs.query.compute.codeHash(codeId);
+  const {code_hash: contractCodeHash} = await secretjs.query.compute.codeHashByCodeId({code_id: codeId});
   console.log(`Contract hash: ${contractCodeHash}`);
 
   // Create an instance of the Counter contract, providing a starting count
   const initMsg = { count: 0 };
   tx = await secretjs.tx.compute.instantiateContract(
     {
-      codeId: codeId,
+      code_id: codeId,
       sender: wallet.address,
-      codeHash: contractCodeHash,
-      initMsg: initMsg,
+      code_hash: contractCodeHash,
+      init_msg: initMsg,
       label: "My Counter" + Math.ceil(Math.random() * 10000),
     },
     {
@@ -72,8 +72,8 @@ const main = async () => {
   // Query the current count
   console.log("Querying contract for current count");
   const { count } = await secretjs.query.compute.queryContract({
-    contractAddress: contractAddress,
-    codeHash: contractCodeHash,
+    contract_address: contractAddress,
+    code_hash: contractCodeHash,
     query: { get_count: {} },
   });
 
@@ -84,8 +84,8 @@ const main = async () => {
 
   const incrMessage = new MsgExecuteContract({
     sender: wallet.address,
-    contractAddress: contractAddress,
-    codeHash: contractCodeHash,
+    contract_address: contractAddress,
+    code_hash: contractCodeHash,
     msg: {increment: {}}
   });
 
@@ -95,14 +95,14 @@ const main = async () => {
   
   // multiple requests to increment
   tx = await secretjs.tx.broadcast([incrMessage, incrMessage], {
-    gasLimit: Math.ceil(sim.gasInfo.gasUsed * 1.1),
+    gasLimit: Math.ceil(sim.gas_info.gas_used * 1.1),
   });
 
   // Query again to confirm it worked
   console.log("Querying contract for updated count");
   const newCount = await secretjs.query.compute.queryContract({
-    contractAddress: contractAddress,
-    codeHash: contractCodeHash,
+    contract_address: contractAddress,
+    code_hash: contractCodeHash,
     query: { get_count: {} },
   });
 

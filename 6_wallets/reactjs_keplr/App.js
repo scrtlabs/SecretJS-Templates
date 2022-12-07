@@ -19,7 +19,6 @@ const MINIMAL_DENOM = 'uscrt';
 
 // secretdev / local secret
 const CHAIN_NAME = 'Local Testnet';  //Anything you want
-const GRPCWEB_URL = 'http://localhost:9091';
 const LCD_URL = 'http://localhost:1317';
 const RPC_URL = 'http://localhost:26657';
 const CHAIN_ID = "secretdev-1";
@@ -112,8 +111,8 @@ export default function App() {
 
       const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
       
-      const secretjs = await SecretNetworkClient.create({
-        grpcWebUrl: GRPCWEB_URL,
+      const secretjs = new SecretNetworkClient({
+        url: LCD_URL,
         chainId: CHAIN_ID,
         wallet: keplrOfflineSigner,
         walletAddress: myAddress,

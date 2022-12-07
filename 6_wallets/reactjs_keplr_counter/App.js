@@ -13,7 +13,6 @@ const DENOM = 'SCRT';
 const MINIMAL_DENOM = 'uscrt';
 
 // Testnet, using a known contract
-const GRPCWEB_URL = 'https://grpc.pulsar.scrttestnet.com';
 const LCD_URL = 'https://api.pulsar.scrttestnet.com';
 const RPC_URL = 'https://rpc.pulsar.scrttestnet.com';
 const CHAIN_ID = 'pulsar-2';
@@ -41,7 +40,7 @@ export default function App() {
       const tx = await secretjs.tx.compute.executeContract(
         {
           sender: myAddress,
-          contractAddress: contractAddress,
+          contract_address: contractAddress,
           msg: { increment: {} }
         },
         {
@@ -51,7 +50,7 @@ export default function App() {
       console.log(`broadcasted tx=${JSON.stringify(tx)}`);
 
       const { count } = await secretjs.query.compute.queryContract({
-        contractAddress: contractAddress,
+        contract_address: contractAddress,
         query: { get_count: {} }
       });
       console.log(`counter=${count}`);
@@ -145,8 +144,8 @@ export default function App() {
 
       const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
       
-      const secretjs = await SecretNetworkClient.create({
-        grpcWebUrl: GRPCWEB_URL,
+      const secretjs = new SecretNetworkClient({
+        url: LCD_URL,
         chainId: CHAIN_ID,
         wallet: keplrOfflineSigner,
         walletAddress: myAddress,
@@ -155,7 +154,7 @@ export default function App() {
 
       // test contract query
       const { count } = await secretjs.query.compute.queryContract({
-        contractAddress: contractAddress,
+        contract_address: contractAddress,
         query: { get_count: {} }
       });
 

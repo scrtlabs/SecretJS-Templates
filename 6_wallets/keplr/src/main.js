@@ -68,13 +68,12 @@ window.onload = async () => {
         // If you don't request enabling before usage, there is no guarantee that other methods will work.
         await window.keplr.enable(this.chainId);
 
-        // @ts-ignore
-        const keplrOfflineSigner = window.getOfflineSigner(this.chainId);
-        const accounts = await keplrOfflineSigner.getAccounts();
+        const keplrOfflineSigner = window.keplr.getOfflineSignerOnlyAmino(this.chainId);
+        const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
 
-        this.address = accounts[0].address;
-        this.secretjs = await SecretNetworkClient.create({
-          grpcWebUrl: "https://grpc.pulsar.scrttestnet.com",
+        this.address = myAddress;
+        this.secretjs = new SecretNetworkClient({
+          url: "https://api.pulsar.scrttestnet.com",
           chainId: this.chainId,
           wallet: keplrOfflineSigner,
           walletAddress: this.address,
@@ -132,8 +131,8 @@ document.sendForm.onsubmit = () => {
     const result = await this.secretjs.tx.bank.send(
       {
         amount: [{ amount: sendAmount.toString(), denom: "uscrt" }],
-        fromAddress: this.address,
-        toAddress: recipient, // Set recipient to sender for testing
+        from_address: this.address,
+        to_address: recipient, // Set recipient to sender for testing
       },
       {
         gasLimit: 20000,
