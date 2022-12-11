@@ -145,8 +145,8 @@ export default function App() {
 
       const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
       
-      const secretjs = await SecretNetworkClient.create({
-        grpcWebUrl: GRPCWEB_URL,
+      const secretjs = new SecretNetworkClient({
+        url: LCD_URL,
         chainId: CHAIN_ID,
         wallet: keplrOfflineSigner,
         walletAddress: myAddress,
@@ -155,7 +155,7 @@ export default function App() {
 
       // test contract query
       const { count } = await secretjs.query.compute.queryContract({
-        contractAddress: contractAddress,
+        contract_address: contractAddress,
         query: { get_count: {} }
       });
 
