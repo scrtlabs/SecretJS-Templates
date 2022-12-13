@@ -112,8 +112,8 @@ export default function App() {
 
       const [{ address: myAddress }] = await keplrOfflineSigner.getAccounts();
       
-      const secretjs = await SecretNetworkClient.create({
-        grpcWebUrl: GRPCWEB_URL,
+      const secretjs = new SecretNetworkClient({
+        url: LCD_URL,
         chainId: CHAIN_ID,
         wallet: keplrOfflineSigner,
         walletAddress: myAddress,

@@ -1,7 +1,7 @@
-const { SigningCosmWasmClient } = require('secretjs');
+const { SecretNetworkClient } = require('secretjs');
 
 window.onload = async () => {
-    this.chainId = 'holodeck-2';
+    this.chainId = 'pulsar-2';
 
     // Keplr extension injects the offline signer that is compatible with cosmJS.
     // You can get this offline signer from `window.getOfflineSigner(chainId:string)` after load event.
@@ -22,8 +22,8 @@ window.onload = async () => {
                 await window.keplr.experimentalSuggestChain({
                     chainId: this.chainId,
                     chainName: 'Secret Testnet',
-                    rpc: 'http://chainofsecrets.secrettestnet.io:26657',
-                    rest: 'https://chainofsecrets.secrettestnet.io',
+                    rpc: 'https://rpc.pulsar.scrttestnet.com',
+                    rest: 'https://api.pulsar.scrttestnet.com',
                     bip44: {
                         coinType: 529,
                     },
@@ -69,28 +69,18 @@ window.onload = async () => {
                 await window.keplr.enable(this.chainId);
 
                 // @ts-ignore
-                const keplrOfflineSigner = window.getOfflineSigner(this.chainId);
+                const keplrOfflineSigner = window.getOfflineSignerOnlyAmino(this.chainId);
                 const accounts = await keplrOfflineSigner.getAccounts();
                 
                 this.address = accounts[0].address;
 
-                this.cosmJS = new SigningCosmWasmClient(
-                    'https://chainofsecrets.secrettestnet.io/',
-                    this.address,
-                    keplrOfflineSigner,
-                    window.getEnigmaUtils(this.chainId),
-                    {
-                        init: {
-                            amount: [{ amount: '300000', denom: 'uscrt' }],
-                            gas: '300000',
-                        },
-                        exec: {
-                            amount: [{ amount: '300000', denom: 'uscrt' }],
-                            gas: '300000',
-                        },
-                    },
-                );
-                this.account = await this.cosmJS.getAccount(this.address);
+                window.secretjs = new SecretNetworkClient({
+                  url: 'https://api.pulsar.scrttestnet.com',
+                  chainId: this.chainId,
+                  wallet: keplrOfflineSigner,
+                  walletAddress: this.address,
+                  encryptionUtils: window.keplr.getEnigmaUtils(this.chainId),
+                });
             } catch (error) {
                 console.error(error)
             }
@@ -102,28 +92,27 @@ window.onload = async () => {
     document.getElementById("address").append(this.address);
 
     // Show balance if available
-    if (this.account) {
+    if (this.address) {
         // For testing this assumes a new account with only uscrt in the list of balances
-        document.getElementById("balance").append(`${getScrt(this.account)}`);
+        document.getElementById("balance").append(`${await getScrt(this.address)}`);
     } else {
         document.getElementById("balance").append('0 USCRT');
     }
 };
 
-function isDenomScrt(balance) {
-    return balance.denom === 'uscrt';
-}
-
-function getScrt(account) {
-    if (account === undefined) {
+async function getScrt(address) {
+  console.log(window.secretjs);
+  const { balance: { amount } } = await window.secretjs.query.bank.balance(
+    {
+      address,
+      denom: "uscrt",
+    });
+  
+    if (amount === undefined) {
         return "0 SCRT"
     } else {
-        const balance = account.balance.find(isDenomScrt);
-        let amount = 0;
-        if (balance) {
-            amount = balance.amount > 0 ? balance.amount / 10**6 : 0;
-        }
-        return `${amount} SCRT`;
+        let resultAmount = amount > 0 ? amount / 10**6 : 0;
+        return `${resultAmount} SCRT`;
     }
 }
 
@@ -142,18 +131,21 @@ document.sendForm.onsubmit = () => {
 
     (async () => {
         await window.keplr.enable(this.chainId);
-        const result = await this.cosmJS.sendTokens(recipient, [{
-            denom: "uscrt",
-            amount: amount.toString(),
-        }]);
-
-        console.log(result);
-
-        if (result.code !== undefined &&
-            result.code !== 0) {
-            alert("Failed to send tx: " + result.log || result.rawLog);
+        const tx = await window.secretjs.tx.bank.send(
+          {
+            from_address: this.address,
+            to_address: recipient,
+            amount: [{ denom: "uscrt", amount: amount.toString() }],
+          },
+          {
+            gasLimit: "20000",
+          }
+        );
+        if (tx.code !== undefined &&
+          tx.code !== 0) {
+            alert("Failed to send tx: " + tx.log || tx.rawLog);
         } else {
-            alert("Successfully sent tx: https://explorer.secrettestnet.io/transactions/" + result.transactionHash);
+            alert("Successfully sent tx: https://https://secretnodes.com/pulsar/transactions/" + tx.transactionHash);
         }
     })();
 

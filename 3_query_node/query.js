@@ -5,8 +5,8 @@ require("dotenv").config();
 (async () => {
   // Create a readonly connection to Secret Network node
   // Docs: https://github.com/scrtlabs/secret.js#secretnetworkclient
-  const secretjs = await SecretNetworkClient.create({
-    grpcWebUrl: process.env.SECRET_GRPC_WEB_URL,
+  const secretjs = new SecretNetworkClient({
+    url: process.env.SECRET_LCD_URL
   });
 
   // 1. Query node info
