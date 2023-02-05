@@ -16,7 +16,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "secretjs": "^1.7.1-beta.2",
+    "secretjs": "^1.7.1-beta.3",
     "dotenv-webpack": "^6.0.0"
   }
 }
