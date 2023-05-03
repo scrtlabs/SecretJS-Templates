@@ -16,6 +16,7 @@ const main = async () => {
     chainId: process.env.SECRET_CHAIN_ID,
   });
 
+  console.log('wallet address:', wallet.address)
   const tx = await secretjs.tx.bank.send(
     {
       amount: [{ amount: "1", denom: "uscrt" }],
@@ -23,7 +24,7 @@ const main = async () => {
       to_address: wallet.address, // Set recipient to sender for testing
     },
     {
-      gasLimit: 20_000,
+      gasLimit: 10_000_000,
       gasPriceInFeeDenom: 0.25,
       memo: "send tokens example",
     }
