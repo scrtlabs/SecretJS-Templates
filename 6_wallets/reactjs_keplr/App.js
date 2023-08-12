@@ -48,7 +48,7 @@ export default function App() {
       // On mainnet we don't need this (`experimentalSuggestChain`).
       // This works well with `Local Secret`:
       //     - https://docs.scrt.network/secret-network-documentation/development/local-secret
-      //     - Run a local chain: `docker run -it --rm -p 9091:9091 -p 26657:26657 -p 26656:26656 -p 1317:1317 -p 5000:5000 -v $(shell pwd):/root/code --name secretdev ghcr.io/scrtlabs/localsecret:v1.3.1`
+      //     - Run a local chain: `docker run -it --rm -p 9091:9091 -p 26657:26657 -p 26656:26656 -p 1317:1317 -p 5000:5000 -v $(shell pwd):/root/code --name secretdev ghcr.io/scrtlabs/localsecret`
       //     - `alias secretcli='docker exec -it secretdev secretcli'`
       //     - Store a contract: `docker exec -it secretdev secretcli tx compute store /root/code/contract.wasm.gz --from a --gas 10000000 -b block -y`
       // On pulsar-2, set:

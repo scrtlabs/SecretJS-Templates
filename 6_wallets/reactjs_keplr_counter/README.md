@@ -12,7 +12,7 @@
 ### Then copy the content of the App.js in this folder, into your project's `src/App.js`
 
 ### Start Local Secret
-`docker run -it -p 9091:9091 -p 26657:26657 -p 1317:1317 -p 5000:5000 --name localsecret ghcr.io/scrtlabs/localsecret:v1.3.1` 
+`docker run -it -p 9091:9091 -p 26657:26657 -p 1317:1317 -p 5000:5000 --name localsecret ghcr.io/scrtlabs/localsecret` 
 
 ### Start your app
 `yarn start` (or `npm start`)
