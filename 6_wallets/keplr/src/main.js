@@ -145,7 +145,7 @@ document.sendForm.onsubmit = () => {
           tx.code !== 0) {
             alert("Failed to send tx: " + tx.log || tx.rawLog);
         } else {
-            alert("Successfully sent tx: https://https://secretnodes.com/pulsar/transactions/" + tx.transactionHash);
+            alert("Successfully sent tx: https://testnet.ping.pub/secret/tx/" + tx.transactionHash);
         }
     })();
 

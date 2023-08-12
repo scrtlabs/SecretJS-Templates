@@ -18,7 +18,7 @@
   "author": "Taariq Levack",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "secretjs": "^1.5.1"
+    "dotenv": "^16.3.1",
+    "secretjs": "^1.9.3"
   }
 }
