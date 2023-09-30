@@ -1,7 +1,7 @@
 const { SecretNetworkClient } = require('secretjs');
 
 window.onload = async () => {
-    this.chainId = 'pulsar-2';
+    this.chainId = 'pulsar-3';
 
     // Keplr extension injects the offline signer that is compatible with cosmJS.
     // You can get this offline signer from `window.getOfflineSigner(chainId:string)` after load event.
@@ -143,9 +143,10 @@ document.sendForm.onsubmit = () => {
         );
         if (tx.code !== undefined &&
           tx.code !== 0) {
+            console.log(JSON.stringify(tx))
             alert("Failed to send tx: " + tx.log || tx.rawLog);
         } else {
-            alert("Successfully sent tx: https://https://secretnodes.com/pulsar/transactions/" + tx.transactionHash);
+            alert("Successfully sent tx: https://testnet.ping.pub/secret/tx/" + tx.transactionHash);
         }
     })();
 

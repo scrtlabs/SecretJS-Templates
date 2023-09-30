@@ -39,4 +39,6 @@ Make sure to copy `.env.testnet.example` file to `.env` file and update its cont
 - `npm run 5:multi` - Create, deploy and use a Secret Contract with multiple messages in the same transaction
 - `cd 6_wallets/keplr && npm i && npm run dev` - Keplr wallet
 - `npm run 7` - SNIP-20 token. Creating and using fungible tokens
-- `cd 8_websocket && npm i && npm run dev` - Consume Websocket contract events
+- `cd 8_websocket && npm i && npm run dev` - Consume Websocket contract 
+events
+- `npm run 9` - SNIP-24 token. Creating and using fungible tokens with query permits instead of viewing keys
